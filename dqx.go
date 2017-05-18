@@ -1,12 +1,9 @@
 // main
-package main
+package dqx
 
 import (
 	"encoding/xml"
-	"fmt"
-	"io/ioutil"
 	"math"
-	"strconv"
 )
 
 type Parameter struct {
@@ -58,44 +55,18 @@ type DQX struct {
 	Config  Config   `xml:"Data>Config"`
 }
 
-func main() {
-	f, err := ioutil.ReadFile("/Users/jimdunne/Desktop/band/20170517/20170517.scene.dqx")
-	if err != nil {
-		panic(err)
-	}
-
-	dqx := new(DQX)
+func parseDQX(f []byte) (dqx *DQX, err error) {
+	dqx = new(DQX)
 	err = xml.Unmarshal(f, dqx)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	for _, channel := range dqx.Config.Channels {
-		if channel.Type != 1 {
-			continue
-		}
-		fmt.Printf("%s\n", channel.Name)
-		for _, effect := range channel.Effects {
-			fmt.Printf("  %3d;%s\n", effect.Type, effect.Name)
-			for _, param := range effect.Parameters {
-				value := param.Value
-				if param.Text != "" {
-					value = param.Text
-				}
-				fmt.Printf("    %3d[%2d];%s = \"%s\"\n", param.Type, param.Instance, param.Name, value)
-				if param.Type == 8 {
-					// Convert Q to bandwidth:
-					// log2( (2*(q^2)+1)/(2*(q^2)) + SQRT( ( ((2*(q^2)+1)/(q^2)) ^ 2) / 4 - 1 ) )
-					q, err := strconv.ParseFloat(param.Value, 64)
-					if err != nil {
-						continue
-					}
+	return dqx, err
+}
 
-					q_sqr := q * q
-					bw := math.Log2((2.0*q_sqr+1.0)/(2.0*q_sqr) + math.Sqrt(math.Pow((2.0*q_sqr+1.0)/q_sqr, 2.0)/4.0-1.0))
-					fmt.Printf("    %3d[%2d];Bandwidth = \"%f\"\n", param.Type, param.Instance, bw)
-				}
-			}
-		}
-	}
+func convertQtoBandwidth(q float64) float64 {
+	q_sqr := q * q
+	bw := math.Log2((2.0*q_sqr+1.0)/(2.0*q_sqr) + math.Sqrt(math.Pow((2.0*q_sqr+1.0)/q_sqr, 2.0)/4.0-1.0))
+	return bw
 }
