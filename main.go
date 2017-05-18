@@ -5,6 +5,8 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
+	"math"
+	"strconv"
 )
 
 type Parameter struct {
@@ -81,6 +83,18 @@ func main() {
 					value = param.Text
 				}
 				fmt.Printf("    %3d[%2d];%s = \"%s\"\n", param.Type, param.Instance, param.Name, value)
+				if param.Type == 8 {
+					// Convert Q to bandwidth:
+					// log2( (2*(q^2)+1)/(2*(q^2)) + SQRT( ( ((2*(q^2)+1)/(q^2)) ^ 2) / 4 - 1 ) )
+					q, err := strconv.ParseFloat(param.Value, 64)
+					if err != nil {
+						continue
+					}
+
+					q_sqr := q * q
+					bw := math.Log2((2.0*q_sqr+1.0)/(2.0*q_sqr) + math.Sqrt(math.Pow((2.0*q_sqr+1.0)/q_sqr, 2.0)/4.0-1.0))
+					fmt.Printf("    %3d[%2d];Bandwidth = \"%f\"\n", param.Type, param.Instance, bw)
+				}
 			}
 		}
 	}
