@@ -13,7 +13,7 @@ func Test_parseDQX(t *testing.T) {
 		panic(err)
 	}
 
-	dqx, err := parseDQX(f)
+	dqx, err := ParseDQX(f)
 	if err != nil {
 		panic(err)
 	}
@@ -39,7 +39,7 @@ func Test_parseDQX(t *testing.T) {
 						continue
 					}
 
-					bw := convertQtoBandwidth(q)
+					bw := ConvertQtoBandwidth(q)
 					fmt.Printf("    %3d[%2d];Bandwidth = \"%f\"\n", param.Type, param.Instance, bw)
 				}
 			}

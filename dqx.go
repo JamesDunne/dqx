@@ -55,7 +55,7 @@ type DQX struct {
 	Config  Config   `xml:"Data>Config"`
 }
 
-func parseDQX(f []byte) (dqx *DQX, err error) {
+func ParseDQX(f []byte) (dqx *DQX, err error) {
 	dqx = new(DQX)
 	err = xml.Unmarshal(f, dqx)
 	if err != nil {
@@ -65,7 +65,7 @@ func parseDQX(f []byte) (dqx *DQX, err error) {
 	return dqx, err
 }
 
-func convertQtoBandwidth(q float64) float64 {
+func ConvertQtoBandwidth(q float64) float64 {
 	q_sqr := q * q
 	bw := math.Log2((2.0*q_sqr+1.0)/(2.0*q_sqr) + math.Sqrt(math.Pow((2.0*q_sqr+1.0)/q_sqr, 2.0)/4.0-1.0))
 	return bw
