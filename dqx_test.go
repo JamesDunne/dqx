@@ -8,7 +8,7 @@ import (
 )
 
 func Test_parseDQX(t *testing.T) {
-	f, err := ioutil.ReadFile("/Users/jimdunne/Desktop/band/20170726/20170726.scene.dqx")
+	f, err := ioutil.ReadFile("20170830.scene.dqx")
 	if err != nil {
 		panic(err)
 	}
